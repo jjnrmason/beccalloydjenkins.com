@@ -5,8 +5,8 @@
     --color-surface: #F5EFE7;
     --color-text: #1C1917;
     --color-text-muted: #78716C;
-    --color-accent: #C2714F;
-    --color-accent-dark: #A85C3E;
+    --color-accent: #24a28f;
+    --color-accent-dark: #24a28f;
     --color-accent-light: #FAE8DF;
     --color-border: #E7DED5;
 }
@@ -278,7 +278,7 @@ img {
 
 .hero h1 {
     font-family: var(--font-heading);
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-size: clamp(2.5rem, 6vw, 4rem);
     font-weight: 400;
     color: var(--color-text);
     letter-spacing: -0.01em;
