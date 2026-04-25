@@ -1,31 +1,38 @@
-﻿@inject NavigationManager NavigationManager
+@inject NavigationManager NavigationManager
 
-@* NavBar.razor *@
-<nav class="bg-white text-black p-4">
-    <div class="flex justify-between items-center items-center">
-        <div class="text-lg font-bold">Becca Lloyd-Jenkins</div>
-  
-        <div class="hidden md:flex flex space-x-4">
-            <a href="@baseUrl" class="hover:bg-gray-200 px-3 py-2 rounded-md text-lg">Home</a>
-            <a href="@($"{baseUrl}about")" class="hover:bg-gray-200 px-3 py-2 rounded-md text-lg">About</a>
+<header>
+    <nav class="site-nav">
+        <a href="@baseUrl" class="logo">Becca Lloyd-Jenkins</a>
+
+        <div class="nav-links hidden md:flex gap-1">
+            <a href="@baseUrl" class="@(IsActive("") ? "active" : "")">Work</a>
+            <a href="@($"{baseUrl}about")" class="@(IsActive("about") ? "active" : "")">About</a>
+            <a href="mailto:beccamaedesigns@outlook.com" style="color: var(--color-accent)">Contact</a>
         </div>
 
-        <!-- Hamburger Icon (Mobile) -->
-        <div class="md:hidden">
-            <button @onclick="ToggleMenu" class="text-black focus:outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-6 w-6">
+        <button @onclick="ToggleMenu" class="md:hidden" style="background:none;border:none;cursor:pointer;padding:0.25rem;" aria-label="Toggle menu">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:1.5rem;height:1.5rem;color:var(--color-text)">
+                @if (isMenuOpen)
+                {
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                }
+                else
+                {
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
-        </div>
-    </div>
+                }
+            </svg>
+        </button>
+    </nav>
 
-    <!-- Mobile Menu (Hidden on large screens, visible on small screens) -->
-    <div class="@mobileMenuClass">
-        <a href="@baseUrl" class="block px-4 py-2 text-lg text-black hover:bg-gray-200">Home</a>
-        <a href="@($"{baseUrl}about")" class="block px-4 py-2 text-lg text-black hover:bg-gray-200">About</a>
-    </div>
-</nav>
+    @if (isMenuOpen)
+    {
+        <div class="mobile-menu md:hidden">
+            <a href="@baseUrl" @onclick="CloseMenu">Work</a>
+            <a href="@($"{baseUrl}about")" @onclick="CloseMenu">About</a>
+            <a href="mailto:beccamaedesigns@outlook.com" style="color: var(--color-accent)">Contact</a>
+        </div>
+    }
+</header>
 
 @code {
     private string baseUrl = "/";
@@ -36,10 +43,12 @@
         baseUrl = NavigationManager.BaseUri;
     }
 
-    private void ToggleMenu()
-    {
-        isMenuOpen = !isMenuOpen;
-    }
+    private void ToggleMenu() => isMenuOpen = !isMenuOpen;
+    private void CloseMenu() => isMenuOpen = false;
 
-    private string mobileMenuClass => isMenuOpen ? "block bg-white" : "hidden";
+    private bool IsActive(string segment)
+    {
+        var current = NavigationManager.ToBaseRelativePath(NavigationManager.Uri).TrimEnd('/');
+        return current == segment;
+    }
 }

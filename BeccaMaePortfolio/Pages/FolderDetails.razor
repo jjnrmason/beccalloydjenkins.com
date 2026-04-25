@@ -1,46 +1,94 @@
-﻿@page "/folder/{FolderName}"
-@inject NavigationManager Navigation
+@page "/folder/{FolderName}"
 @inject NavigationManager NavigationManager
 
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-    @foreach (var image in Images)
-    {
-        <div class="overflow-hidden rounded-lg shadow-lg">
-            <img src="@($"{baseUrl}images/{FolderName}/{image}")" loading="lazy" @onclick="() => OpenImage(image)" alt="Image: @image" class="w-full h-full object-cover"/>
+<div class="page-content">
+    <div style="margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div>
+            <a href="@baseUrl" class="back-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                All Work
+            </a>
+            <h1 style="font-family:var(--font-heading);font-size:2rem;font-weight:500;margin-top:0.25rem;">@FolderTitle</h1>
         </div>
-    }
+        <span style="font-size:0.875rem;color:var(--color-text-muted);">@Images.Count image@(Images.Count == 1 ? "" : "s")</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;">
+        @foreach (var image in Images)
+        {
+            <div class="gallery-card" @onclick="() => OpenLightbox(image)" role="button" tabindex="0" @onkeydown="@((e) => { if (e.Key == "Enter") OpenLightbox(image); })">
+                <div class="aspect-square-wrapper">
+                    <img src="@($"{baseUrl}images/{FolderName}/{image}")"
+                         loading="lazy"
+                         alt="@image"
+                         width="300" height="300" />
+                    <div class="overlay">
+                        <span>View</span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
+
+@if (lightboxImage != null)
+{
+    <div class="lightbox-backdrop" @onclick="CloseLightbox">
+        <button class="lightbox-close" @onclick="CloseLightbox" @onclick:stopPropagation="true" aria-label="Close">&#x2715;</button>
+        <img class="lightbox-img"
+             src="@($"{baseUrl}images/{FolderName}/{lightboxImage}")"
+             alt="@lightboxImage"
+             @onclick:stopPropagation="true" />
+    </div>
+}
 
 @code {
     private string baseUrl = "/";
-    private List<string> Images = new List<string>();
+    private List<string> Images = new();
+    private string? lightboxImage;
 
     [Parameter]
     public required string FolderName { get; set; }
 
-    private void OpenImage(string imageFileName)
-    {
-        var fullPath = $"{FolderName}/{imageFileName}";
-        var encodedPath = Uri.EscapeDataString(fullPath);
-        Navigation.NavigateTo($"{baseUrl}enlarge/{encodedPath}");
-    }
+    private string FolderTitle => FolderName switch {
+        "383Canvas" => "383 Project",
+        "ChildrenBooks" => "Monty Moo Children's Book",
+        "CocaCola" => "Coca-Cola × World Cup",
+        "EmployabilityPortfolio" => "Employability Portfolio",
+        "FloralMural" => "Floral Mural",
+        "MenuDesign" => "1232 Menu Design",
+        "PigeonMag" => "Pigeon Magazine",
+        "Purify" => "Purify Website Design",
+        "REDCards" => "REDs Fortune Cards",
+        "SameDifference" => "Same Difference Festival",
+        "Stamps" => "King Charles Stamps",
+        "StarWarsMural" => "Star Wars Mural",
+        "Syrup" => "Syrup × Mental Health",
+        "TonysChocolonely" => "Tony's Chocolonely",
+        "PetDrawings" => "Pet Drawings",
+        "HouseDrawings" => "House Drawings",
+        "ChalkBoards" => "Chalk Boards",
+        _ => FolderName
+    };
+
+    private void OpenLightbox(string image) => lightboxImage = image;
+    private void CloseLightbox() => lightboxImage = null;
 
     protected override void OnInitialized()
     {
         baseUrl = NavigationManager.BaseUri;
 
-        if (FolderName == "383Canvas")
-        {
-            Images = new List<string> {
+        Images = FolderName switch {
+            "383Canvas" => new List<string> {
                 "383 Canvas Pages_Page_4.jpg",
                 "383 Canvas Pages_Page_5.jpg",
                 "383 Canvas Pages_Page_6.jpg",
                 "383 Canvas Pages_Page_7.jpg",
                 "383 Canvas Pages_Page_8.jpg"
-            };
-        } else if (FolderName == "ChildrenBooks")
-        {
-            Images = new List<string> {
+            },
+            "ChildrenBooks" => new List<string> {
                 "Book open photo 1.JPG",
                 "Book open photo 2.JPG",
                 "Cover photo 2.JPG",
@@ -60,11 +108,8 @@
                 "Spread photo 9.JPG",
                 "Spread photo 10.JPG",
                 "Spread photo 11.JPG"
-            };
-        }
-        else if (FolderName == "CocaCola")
-        {
-            Images = new List<string> {
+            },
+            "CocaCola" => new List<string> {
                 "Starpack Final Product Photos_Page_01.jpg",
                 "Starpack Final Product Photos_Page_02.jpg",
                 "Starpack Final Product Photos_Page_03.jpg",
@@ -74,11 +119,8 @@
                 "Starpack Final Product Photos_Page_07.jpg",
                 "Starpack Final Product Photos_Page_09.jpg",
                 "Starpack Final Product Photos_Page_16.jpg",
-            };
-        }
-        else if (FolderName == "EmployabilityPortfolio")
-        {
-            Images = new List<string> {
+            },
+            "EmployabilityPortfolio" => new List<string> {
                 "AFTER UNI.png",
                 "ASK ITALIAN.png",
                 "A4 Book Mockup.jpg",
@@ -90,11 +132,9 @@
                 "GUEST SPEAKERS.png",
                 "KELLOGGS.png",
                 "KENSA.png",
-                "SWOT.png"    
-            };
-        } else if (FolderName == "FloralMural")
-        {
-            Images = new List<string> {
+                "SWOT.png"
+            },
+            "FloralMural" => new List<string> {
                 "IMG_0079.jpg",
                 "IMG_0087.jpg",
                 "IMG_8408.jpg",
@@ -106,11 +146,9 @@
                 "IMG_9073_2.jpg",
                 "IMG_9251_3.jpg",
                 "IMG_9997_2.jpg",
-                "64753472933__EE323270-25C6-4CB9-A203-BFB40DF580A7_2.jpg"    
-            };
-        } else if (FolderName == "MenuDesign")
-        {
-            Images = new List<string> { 
+                "64753472933__EE323270-25C6-4CB9-A203-BFB40DF580A7_2.jpg"
+            },
+            "MenuDesign" => new List<string> {
                 "Final 1232 Menu Mockup.png",
                 "Final 1232 Menu Photo.JPG",
                 "Final 1232 Menus Mockup.png",
@@ -118,10 +156,8 @@
                 "Menu Pattern -  Drinks.png",
                 "Menu Pattern - Breakfast.png",
                 "Menu Pattern - Lunch.png"
-            };
-        } else if (FolderName == "PigeonMag")
-        {
-            Images = new List<string> { 
+            },
+            "PigeonMag" => new List<string> {
                 "RLJ Magazine Mockup.png",
                 "RLJ Pigeon Mag Photos_Page_01.jpg",
                 "RLJ Pigeon Mag Photos_Page_02.jpg",
@@ -132,17 +168,13 @@
                 "RLJ Pigeon Mag Photos_Page_08.jpg",
                 "RLJ Pigeon Mag Photos_Page_09.jpg",
                 "RLJ Pigeon Mag Photos_Page_10.jpg"
-            };
-        } else if (FolderName == "Purify")
-        {
-            Images = new List<string> { 
+            },
+            "Purify" => new List<string> {
                 "PC.png",
                 "Phone.png",
                 "LandingPage.jpg"
-            };
-        } else if (FolderName == "REDCards")
-        {
-            Images = new List<string> { 
+            },
+            "REDCards" => new List<string> {
                 "Final Cards Mockup 1.png",
                 "Final Cards Mockup 2.png",
                 "Printing Final Cards.JPG",
@@ -152,10 +184,8 @@
                 "REDs Final Product 4.JPG",
                 "REDs Final Product 5.JPG",
                 "REDs Final Product 6.JPG"
-            };
-        } else if (FolderName == "SameDifference")
-        {
-            Images = new List<string> { 
+            },
+            "SameDifference" => new List<string> {
                 "Asset 2@4x.png",
                 "Billboard Night.jpg",
                 "Billboard.jpg",
@@ -170,10 +200,8 @@
                 "484271441_689392553425302_8757540717258035876_n.jpg",
                 "484335647_689392563425301_4300387589462361680_n.jpg",
                 "484507883_689392253425332_7579775884980833659_n.jpg"
-            };
-        } else if (FolderName == "Stamps")
-        {
-            Images = new List<string> { 
+            },
+            "Stamps" => new List<string> {
                 "Aston Martin Collage 1.png",
                 "Aston Martin Collage 2.jpg",
                 "Egg Collage 1.png",
@@ -192,36 +220,28 @@
                 "Stamp Booklet Photo 1.JPG",
                 "Stamp Booklet Photo 2.JPG",
                 "Stamps On Envelopes.JPG"
-            };
-        } else if (FolderName == "StarWarsMural")
-        {
-            Images = new List<string> { 
+            },
+            "StarWarsMural" => new List<string> {
                 "466352353_18028910531526864_1893401117235778393_n.jpg",
                 "466423728_18028910732526864_717750362176104875_n.jpg",
                 "466601029_18028910726526864_196902466298758569_n.jpg",
                 "466832154_18028910603526864_6731460833625731395_n.jpg",
                 "466981540_18028910468526864_2605353484642100682_n.jpg"
-            };
-        } else if (FolderName == "Syrup")
-        {
-            Images = new List<string> { 
+            },
+            "Syrup" => new List<string> {
                 "RLJ - DRPG FINAL Presentation_Page_2.jpg",
                 "RLJ - DRPG FINAL Presentation_Page_3.jpg",
                 "RLJ - DRPG FINAL Presentation_Page_4.jpg",
                 "RLJ - DRPG FINAL Presentation_Page_5.jpg",
                 "RLJ - DRPG FINAL Presentation_Page_6.jpg",
                 "RLJ - DRPG FINAL Presentation_Page_7.jpg"
-            };
-        } else if (FolderName == "TonysChocolonely")
-        {
-            Images = new List<string> { 
+            },
+            "TonysChocolonely" => new List<string> {
                 "Honourable Mention.png",
                 "TC x DFP Final Bar.png",
                 "TC x DFP Final Pattern.png"
-            };
-        } else if (FolderName == "PetDrawings")
-        {
-            Images = new List<string> {
+            },
+            "PetDrawings" => new List<string> {
                 "Untitled_Artwork 433.png",
                 "Untitled_Artwork 434.png",
                 "Untitled_Artwork 437.png",
@@ -232,11 +252,8 @@
                 "Untitled_Artwork 436.png",
                 "Untitled_Artwork 429.png",
                 "Untitled_Artwork 430.png"
-            };
-        }
-        else if (FolderName == "HouseDrawings")
-        {
-            Images = new List<string> {
+            },
+            "HouseDrawings" => new List<string> {
                 "Untitled_Artwork 427.png",
                 "Untitled_Artwork 428.png",
                 "Untitled_Artwork 421.png",
@@ -246,11 +263,8 @@
                 "Untitled_Artwork 425.png",
                 "Untitled_Artwork 419.png",
                 "Untitled_Artwork 420.png"
-            };
-        }
-        else if (FolderName == "ChalkBoards")
-        {
-            Images = new List<string> {
+            },
+            "ChalkBoards" => new List<string> {
                 "image1.jpg",
                 "image2.jpg",
                 "image3.jpg",
@@ -263,7 +277,8 @@
                 "image10.jpg",
                 "image11.jpg",
                 "image12.jpg",
-            };
-        }
+            },
+            _ => new List<string>()
+        };
     }
 }

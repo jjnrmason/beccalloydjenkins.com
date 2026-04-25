@@ -1,10 +1,15 @@
-﻿@inherits LayoutComponentBase
-<div>
-    <NavMenu />
+@inherits LayoutComponentBase
 
-    <main>
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+<NavMenu />
+
+<main>
+    @Body
+</main>
+
+<footer class="site-footer">
+    <p>
+        &copy; @DateTime.Now.Year Becca Lloyd-Jenkins &nbsp;&middot;&nbsp;
+        <a href="mailto:beccamaedesigns@outlook.com">beccamaedesigns@outlook.com</a>
+        &nbsp;&middot;&nbsp; Shropshire, UK
+    </p>
+</footer>
