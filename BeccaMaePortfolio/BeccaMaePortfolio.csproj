@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.3" PrivateAssets="all" />
   </ItemGroup>
 
+  <Target Name="GenerateImageManifest" BeforeTargets="Build">
+    <Exec Command="python3 &quot;$(MSBuildProjectDirectory)/generate-manifest.py&quot; &quot;$(MSBuildProjectDirectory)/wwwroot/images&quot;" />
+  </Target>
+
 </Project>

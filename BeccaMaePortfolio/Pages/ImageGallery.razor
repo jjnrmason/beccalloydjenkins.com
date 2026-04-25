@@ -1,57 +1,43 @@
 @page "/image-gallery"
 @inject NavigationManager NavigationManager
+@inject ImageService ImageService
 
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem;">
-    @foreach (var folder in Folders)
-    {
-        <a href="@($"{baseUrl}folder/{folder.Name}")" class="gallery-card" style="display:block;text-decoration:none;">
-            <div class="aspect-square-wrapper">
-                <img src="@($"{baseUrl}images/{folder.Name}/{folder.Thumbnail}")"
-                     loading="lazy"
-                     alt="@folder.Description"
-                     width="400" height="400" />
-                <div class="overlay">
-                    <span>@folder.Description</span>
+@if (folders == null)
+{
+    <div style="display:flex;justify-content:center;padding:4rem;color:var(--color-text-muted);">Loading...</div>
+}
+else
+{
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem;">
+        @foreach (var folder in folders)
+        {
+            <a href="@($"{baseUrl}folder/{folder.Name}")" class="gallery-card" style="display:block;text-decoration:none;">
+                <div class="aspect-square-wrapper">
+                    <img src="@($"{baseUrl}images/{folder.Name}/{folder.Thumbnail}")"
+                         loading="lazy"
+                         alt="@folder.Title"
+                         width="400" height="400" />
+                    <div class="overlay">
+                        <span>@folder.Title</span>
+                    </div>
                 </div>
-            </div>
-            <div class="gallery-caption">@folder.Description</div>
-        </a>
-    }
-</div>
+                <div class="gallery-caption">@folder.Title</div>
+            </a>
+        }
+    </div>
+}
 
 @code {
     private string baseUrl = "/";
+    private List<FolderManifest>? folders;
 
     protected override void OnInitialized()
     {
         baseUrl = NavigationManager.BaseUri;
     }
 
-    private List<FolderModel> Folders = new List<FolderModel>
+    protected override async Task OnInitializedAsync()
     {
-        new FolderModel { Name = "383Canvas", Description = "383 Project", Thumbnail = "thumbnail.jpg" },
-        new FolderModel { Name = "ChildrenBooks", Description = "Monty Moo Children's Book", Thumbnail = "thumbnail.JPG" },
-        new FolderModel { Name = "CocaCola", Description = "Coca-Cola × World Cup", Thumbnail = "thumbnail.jpg" },
-        new FolderModel { Name = "EmployabilityPortfolio", Description = "Employability Portfolio", Thumbnail = "thumbnail.png" },
-        new FolderModel { Name = "FloralMural", Description = "Floral Mural", Thumbnail = "thumbnail.jpg" },
-        new FolderModel { Name = "MenuDesign", Description = "1232 Menu Design", Thumbnail = "thumbnail.png" },
-        new FolderModel { Name = "PigeonMag", Description = "Pigeon Magazine", Thumbnail = "thumbnail.jpg" },
-        new FolderModel { Name = "Purify", Description = "Purify Website Design", Thumbnail = "thumbnail.png" },
-        new FolderModel { Name = "REDCards", Description = "REDs Fortune Cards", Thumbnail = "thumbnail.JPG" },
-        new FolderModel { Name = "SameDifference", Description = "Same Difference Festival", Thumbnail = "thumbnail.jpg" },
-        new FolderModel { Name = "Stamps", Description = "King Charles Stamps", Thumbnail = "thumbnail.jpg" },
-        new FolderModel { Name = "StarWarsMural", Description = "Star Wars Mural", Thumbnail = "thumbnail.jpg" },
-        new FolderModel { Name = "Syrup", Description = "Syrup × Mental Health", Thumbnail = "thumbnail.jpg" },
-        new FolderModel { Name = "TonysChocolonely", Description = "Tony's Chocolonely", Thumbnail = "thumbnail.png" },
-        new FolderModel { Name = "PetDrawings", Description = "Pet Drawings", Thumbnail = "THUMBNAIL.png" },
-        new FolderModel { Name = "HouseDrawings", Description = "House Drawings", Thumbnail = "THUMBNAIL.png" },
-        new FolderModel { Name = "ChalkBoards", Description = "Chalk Boards", Thumbnail = "thumbnail.jpg" },
-    };
-
-    public class FolderModel
-    {
-        public required string Name { get; set; }
-        public required string Description { get; set; }
-        public required string Thumbnail { get; set; }
+        folders = await ImageService.GetFoldersAsync();
     }
 }
